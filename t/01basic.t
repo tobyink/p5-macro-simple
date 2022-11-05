@@ -45,5 +45,9 @@ my $obj = bless [];
 ok( ISA($obj, 'main') );
 ok( CAN($obj, 'wxyz') );
 
+diag Macro::Simple::DO_MACRO
+	? 'mode: real macros'
+	: 'mode: fallback';
+
 done_testing;
 
