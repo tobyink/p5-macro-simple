@@ -4,3 +4,11 @@
 	issued  2022-11-05;
 	label   "Initial release".
 
+`Macro-Simple 0.002 cpan:TOBYINK`
+	issued  2022-11-06;
+	changeset [
+		item "Use namespace::clean to avoid leaving subs with the same names as macros in your package."^^Change;
+		item "Implement some of this in XS for about a 30% runtime speedup."^^Change;
+		item "Internal tidy-ups."^^Change;
+	].
+
