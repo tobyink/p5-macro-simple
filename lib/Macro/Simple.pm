@@ -84,8 +84,7 @@ sub _setup_fallback {
 
 sub _clean {
 	my ( $class, $caller, $subname ) = ( shift, @_ );
-	DO_CLEAN or return;
-	'namespace::clean'->import( -cleanee => $caller, $subname );
+	'namespace::clean'->import( -cleanee => $caller, $subname ) if DO_CLEAN;
 }
 
 sub _parse {
