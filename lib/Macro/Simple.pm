@@ -27,20 +27,7 @@ sub setup_for {
 	
 	for my $key ( sort keys %$macros ) {
 		my ( $subname, $prototype ) = ( $key =~ m{\A(\w+)(.+)\z} );
-		
-		my $generator = $macros->{$key};
-		if ( 'HASH' eq ref $generator and $generator->{is} ) {
-			my $code = $generator->{is}->inline_check( '$x' );
-			$generator = sub { sprintf 'my $x = %s; %s', $_[0], $code };
-		}
-		elsif ( 'HASH' eq ref $generator and $generator->{assert} ) {
-			my $code = $generator->{assert}->inline_assert( '$x' );
-			$generator = sub { sprintf 'my $x = %s; %s', $_[0], $code };
-		}
-		elsif ( not ref $generator ) {
-			my $format = $generator;
-			$generator = sub { sprintf $format, @_ };
-		}
+		my $generator = $class->handle_generator( $macros->{$key} );
 		
 		$class->$installer( {
 			caller    => $caller,
@@ -49,6 +36,25 @@ sub setup_for {
 			generator => $generator,
 		} );
 	}
+}
+
+sub handle_generator {
+	my ( $class, $generator ) = ( shift, @_ );
+	
+	if ( 'HASH' eq ref $generator and $generator->{is} ) {
+		my $code = $generator->{is}->inline_check( '$x' );
+		$generator = sub { sprintf 'my $x = %s; %s', $_[0], $code };
+	}
+	elsif ( 'HASH' eq ref $generator and $generator->{assert} ) {
+		my $code = $generator->{assert}->inline_assert( '$x' );
+		$generator = sub { sprintf 'my $x = %s; %s', $_[0], $code };
+	}
+	elsif ( not ref $generator ) {
+		my $format = $generator;
+		$generator = sub { sprintf $format, @_ };
+	}
+	
+	return $generator;
 }
 
 sub _setup_using_parse_keyword {
@@ -240,6 +246,12 @@ generators too:
 The C<import> method sets up macros for its caller. If you need to install the
 macros into a different package (which should currently be in the process of
 compiling!), then you can use C<< Macro::Simple->setup_for( $pkg, \%macros ) >>.
+
+=head3 C<< handle_generator( $generator ) >>
+
+Method used internally to transform a non-coderef generator into a coderef.
+(Is also called for coderefs, but the value is simply passed through.)
+Overriding this method may be useful in subclasses.
 
 =head1 BUGS
 
