@@ -9,13 +9,14 @@ our $VERSION   = '0.002';
 
 use Carp;
 
-use constant DO_MACRO =>
-	( $] ge 5.014000 and require Parse::Keyword and require PPI );
-use constant DO_CLEAN =>
-	( require namespace::clean );
+use constant DO_MACRO => (
+	$] ge 5.014000 and
+	require Parse::Keyword and
+	require PPI and
+	require Sub::Boolean
+);
 
-require XSLoader;
-XSLoader::load(__PACKAGE__, $VERSION);
+use constant DO_CLEAN => ( require namespace::clean );
 
 sub import {
 	my ( $class, $macros ) = ( shift, @_ );
@@ -63,7 +64,7 @@ sub handle_generator {
 sub _setup_using_parse_keyword {
 	my ( $class, $opt ) = ( shift, @_ );
 	my ( $caller, $subname ) = @{$opt}{qw/ caller subname /};
-	make_truthy("$caller\::$subname");
+	Sub::Boolean::make_true("$caller\::$subname");
 	no strict qw( refs );
 	Parse::Keyword::install_keyword_handler(
 		\&{ "$caller\::$subname" },
@@ -171,7 +172,7 @@ sub _parse {
 	
 	Parse::Keyword::lex_read( $length );
 	Parse::Keyword::lex_stuff( sprintf ' && do { %s }', $generator->(@args) );
-	return \&truthy; # will never be called. sigh.
+	return \&Sub::Boolean::truthy; # will never be called. sigh.
 }
 
 1;
