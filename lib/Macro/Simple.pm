@@ -73,8 +73,8 @@ sub _setup_fallback {
 	my ( $caller, $subname, $prototype, $generator ) =
 		@{$opt}{qw/ caller subname prototype generator /};
 	my $code = $generator->( map "\$_[$_]", 0 .. 100 );
-	no strict qw( refs );
-	*{ "$caller\::$subname" } = eval "sub $prototype { $code }";
+	local $@;
+	eval "sub $caller\::$subname $prototype { $code }" or die $@;
 }
 
 sub _parse {
