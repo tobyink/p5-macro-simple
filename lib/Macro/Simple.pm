@@ -8,8 +8,11 @@ our $AUTHORITY = 'cpan:TOBYINK';
 our $VERSION   = '0.001';
 
 use Carp;
+
 use constant DO_MACRO =>
 	( $] ge 5.014000 and require Parse::Keyword and require PPI );
+use constant DO_CLEAN =>
+	( require namespace::clean );
 
 require XSLoader;
 XSLoader::load(__PACKAGE__, $VERSION);
@@ -66,6 +69,7 @@ sub _setup_using_parse_keyword {
 		\&{ "$caller\::$subname" },
 		sub { $class->_parse( $opt ) },
 	);
+	$class->_clean( $caller, $subname );
 }
 
 sub _setup_fallback {
@@ -75,6 +79,13 @@ sub _setup_fallback {
 	my $code = $generator->( map "\$_[$_]", 0 .. 100 );
 	local $@;
 	eval "sub $caller\::$subname $prototype { $code }" or die $@;
+	$class->_clean( $caller, $subname );
+}
+
+sub _clean {
+	my ( $class, $caller, $subname ) = ( shift, @_ );
+	DO_CLEAN or return;
+	'namespace::clean'->import( -cleanee => $caller, $subname );
 }
 
 sub _parse {
