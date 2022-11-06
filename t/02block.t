@@ -33,7 +33,6 @@ use Macro::Simple {
 
 my @list = ( 1 .. 5 );
 my $sum;
-my $x;
 
 MYLOOP( $x, @list, sub { $sum += $x } );
 
