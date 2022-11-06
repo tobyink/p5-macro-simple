@@ -77,9 +77,9 @@ sub _setup_fallback {
 	my ( $caller, $subname, $prototype, $generator ) =
 		@{$opt}{qw/ caller subname prototype generator /};
 	my $code = $generator->( map "\$_[$_]", 0 .. 100 );
-	local $@;
-	eval "sub $caller\::$subname $prototype { $code }" or die $@;
-	# $class->_clean( $caller, $subname );
+	no srtict 'refs';
+	*{"$caller\::$subname"} = eval "sub $prototype { $code }";
+	$class->_clean( $caller, $subname );
 }
 
 sub _clean {
