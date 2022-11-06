@@ -79,7 +79,7 @@ sub _setup_fallback {
 	my $code = $generator->( map "\$_[$_]", 0 .. 100 );
 	local $@;
 	eval "sub $caller\::$subname $prototype { $code }" or die $@;
-	$class->_clean( $caller, $subname );
+	# $class->_clean( $caller, $subname );
 }
 
 sub _clean {
