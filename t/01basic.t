@@ -46,8 +46,12 @@ ok( ISA($obj, 'main') );
 ok( CAN($obj, 'wxyz') );
 
 diag Macro::Simple::DO_MACRO
-	? 'mode: real macros'
-	: 'mode: fallback';
+	? 'macro: real'
+	: 'macro: fallback';
+
+diag Macro::Simple::DO_CLEAN
+	? 'clean: yes'
+	: 'clean: no';
 
 done_testing;
 
