@@ -11,6 +11,9 @@ use Carp;
 use constant DO_MACRO =>
 	( $] ge 5.014000 and require Parse::Keyword and require PPI );
 
+require XSLoader;
+XSLoader::load(__PACKAGE__, $VERSION);
+
 sub import {
 	my ( $class, $macros ) = ( shift, @_ );
 	my $caller = caller;
@@ -30,7 +33,7 @@ sub setup_for {
 			my $code = $generator->{is}->inline_check( '$x' );
 			$generator = sub { sprintf 'my $x = %s; %s', $_[0], $code };
 		}
-		if ( 'HASH' eq ref $generator and $generator->{assert} ) {
+		elsif ( 'HASH' eq ref $generator and $generator->{assert} ) {
 			my $code = $generator->{assert}->inline_assert( '$x' );
 			$generator = sub { sprintf 'my $x = %s; %s', $_[0], $code };
 		}
@@ -51,8 +54,8 @@ sub setup_for {
 sub _setup_using_parse_keyword {
 	my ( $class, $opt ) = ( shift, @_ );
 	my ( $caller, $subname ) = @{$opt}{qw/ caller subname /};
+	make_truthy("$caller\::$subname");
 	no strict qw( refs );
-	*{ "$caller\::$subname" } = eval 'sub { 1 }';
 	Parse::Keyword::install_keyword_handler(
 		\&{ "$caller\::$subname" },
 		sub { $class->_parse( $opt ) },
@@ -152,7 +155,7 @@ sub _parse {
 	
 	Parse::Keyword::lex_read( $length );
 	Parse::Keyword::lex_stuff( sprintf ' && do { %s }', $generator->(@args) );
-	return sub { }; # will never be called. sigh.
+	return \&truthy; # will never be called. sigh.
 }
 
 1;
