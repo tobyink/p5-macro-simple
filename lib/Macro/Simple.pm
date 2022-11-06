@@ -267,7 +267,7 @@ Overriding this method may be useful in subclasses.
 =head1 BUGS
 
 Please report any bugs to
-L<http://rt.cpan.org/Dist/Display.html?Queue=Macro-Simple>.
+L<https://github.com/tobyink/p5-macro-simple/issues>.
 
 =head1 SEE ALSO
 
