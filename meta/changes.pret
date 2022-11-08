@@ -12,3 +12,11 @@
 		item "Internal tidy-ups."^^Change;
 	].
 
+`Macro-Simple 0.003 cpan:TOBYINK`
+	issued  2022-11-08;
+	changeset [
+		item "Remove the XS added in the previous version as that has been split out into Sub::Boolean."^^Change;
+		item "Ensure Macro::Simple handles namespace::clean being missing."^^Change;
+		item "Link to correct issue tracker in pod."^^Documentation;
+	].
+
