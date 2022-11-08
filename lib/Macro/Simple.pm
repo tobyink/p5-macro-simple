@@ -16,7 +16,7 @@ use constant DO_MACRO => (
 	require Sub::Boolean
 );
 
-use constant DO_CLEAN => ( require namespace::clean );
+use constant DO_CLEAN => eval { require namespace::clean };
 
 sub import {
 	my ( $class, $macros ) = ( shift, @_ );
